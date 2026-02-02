@@ -5,13 +5,66 @@
 <title>My Valentine Surprise</title>
 <style>
 body, html {margin:0;padding:0;font-family:'Arial',sans-serif;overflow-x:hidden;}
+
+/* PAGE 1 BEAUTY */
 .page {width:100vw;height:100vh;display:none;justify-content:center;align-items:center;flex-direction:column;position:relative;padding:20px;}
 .active {display:flex;}
 
-/* PAGE 1 */
-.page1 {background-color:#e74c3c; display:flex; flex-direction:column; justify-content:center; align-items:center; position:relative;}
-.page1 img {max-width:80%;max-height:80%;border-radius:20px;cursor:pointer;}
-.footer-text {position:absolute;bottom:20px;font-size:28px;color:white;font-weight:bold;text-shadow:1px 1px 2px black;}
+.page1 {
+    background-color: #e74c3c;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    border: 15px solid white;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+/* Small white hearts pattern */
+.page1::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: radial-gradient(circle, white 15%, transparent 15%);
+    background-size: 30px 30px;
+    opacity: 0.2;
+    pointer-events: none;
+    z-index:0;
+}
+
+.page1 img {
+    max-width: 80%;
+    max-height: 80%;
+    border-radius: 20px;
+    z-index: 1;
+}
+
+/* POPUP */
+.popup {
+    position: absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%) scale(0);
+    background-color: rgba(255, 255, 255, 0.85);
+    color: #e74c3c;
+    padding: 25px 50px;
+    font-size: 28px;
+    font-weight: bold;
+    border-radius: 50px;
+    box-shadow: 0 0 25px rgba(0,0,0,0.5);
+    text-align: center;
+    opacity: 0;
+    z-index: 2;
+    animation: popupAnim 1s forwards;
+}
+
+@keyframes popupAnim {
+    0% {opacity: 0; transform: translate(-50%, -50%) scale(0.5);}
+    50% {opacity: 1; transform: translate(-50%, -50%) scale(1.1);}
+    100% {opacity: 1; transform: translate(-50%, -50%) scale(1);}
+}
 
 /* COMMON CARD */
 .card {background:white;padding:30px;border-radius:25px;box-shadow:0 10px 25px rgba(0,0,0,0.3);text-align:center;width:90%;max-width:600px;}
@@ -24,10 +77,10 @@ body, html {margin:0;padding:0;font-family:'Arial',sans-serif;overflow-x:hidden;
 .page2 .message {color:red;font-size:22px;margin-top:10px;}
 
 /* Kisses popup */
-.kisses-popup {position:absolute;top:20%;left:50%;transform:translateX(-50%);background-color:hotpink;color:white;padding:15px 30px;font-size:24px;border-radius:50px;box-shadow:0 0 15px rgba(0,0,0,0.5);display:none;animation:popupAnim 1s forwards;}
-@keyframes popupAnim {0% {opacity:0;transform:translateX(-50%) scale(0.5);} 50% {opacity:1; transform:translateX(-50%) scale(1.1);} 100% {opacity:0; transform:translateX(-50%) scale(1);}}
+.kisses-popup {position:absolute;top:20%;left:50%;transform:translateX(-50%);background-color:hotpink;color:white;padding:15px 30px;font-size:24px;border-radius:50px;box-shadow:0 0 15px rgba(0,0,0,0.5);display:none;animation:popupAnim2 1s forwards;}
+@keyframes popupAnim2 {0%{opacity:0;transform:translateX(-50%) scale(0.5);}50%{opacity:1;transform:translateX(-50%) scale(1.1);}100%{opacity:0;transform:translateX(-50%) scale(1);}}
 
- /* PAGE 3 */
+/* PAGE 3 */
 .page3 {background-color:#ffb6c1; background-image:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50"><text x="0" y="20" font-size="20">💖💋</text></svg>'); background-repeat:repeat;}
 .page3 .question {font-size:28px;color:darkred;margin-bottom:20px;}
 .page3 .options button {display:inline-block;margin:10px;padding:15px 30px;font-size:22px;border-radius:25px;border:none;cursor:pointer;background-color:pink;color:white;box-shadow:0 4px 10px rgba(0,0,0,0.3);transition:transform 0.2s, background-color 0.2s;}
@@ -38,10 +91,15 @@ body, html {margin:0;padding:0;font-family:'Arial',sans-serif;overflow-x:hidden;
 </head>
 <body>
 
+<!-- BACKGROUND MUSIC -->
+<audio id="bgMusic" autoplay loop>
+  <source src="romantic.mp3" type="audio/mpeg">
+</audio>
+
 <!-- PAGE 1 -->
 <div class="page page1 active" id="page1">
-<img src="us.jpg" alt="Us Together" id="startImage">
-<div class="footer-text">Love is in the Air ❤️</div>
+<img src="us.jpg" alt="Us Together">
+<div class="popup" id="lovePopup">Love is in the Air ❤️</div>
 </div>
 
 <!-- PAGE 2 -->
@@ -68,19 +126,22 @@ body, html {margin:0;padding:0;font-family:'Arial',sans-serif;overflow-x:hidden;
 </div>
 
 <script>
-// PAGE 1: click image to start
-const startImage = document.getElementById('startImage');
-const page1 = document.getElementById('page1');
-const page2 = document.getElementById('page2');
-const page3 = document.getElementById('page3');
+// PAGE 1 popup then page 2
+const page1=document.getElementById('page1');
+const page2=document.getElementById('page2');
+const lovePopup=document.getElementById('lovePopup');
 
-startImage.addEventListener('click', ()=>{
-    page1.classList.remove('active');
-    page2.classList.add('active');
-    showQuestion(0);
-});
+setTimeout(()=>{
+    lovePopup.style.transform="translate(-50%,-50%) scale(1)";
+    lovePopup.style.opacity="1";
+    setTimeout(()=>{
+        page1.classList.remove('active');
+        page2.classList.add('active');
+        showQuestion(0);
+    },3000);
+},1000);
 
-// PAGE 2 questions
+// PAGE 2 Questions
 const questions=[
 {text:"When did we kiss for the first time?",options:["25 December","26 December","27 December"],answer:"26 December"},
 {text:"When did you say I love you to me?",options:["1 January","2 January","3 January"],answer:"2 January"},
@@ -108,14 +169,13 @@ optionsContainer.appendChild(btn);
 
 function checkAnswer(selected){
 if(selected===questions[currentQuestion].answer){
-    // show popup
     kissesPopup.style.display="block";
     setTimeout(()=>{
         kissesPopup.style.display="none";
         currentQuestion++;
         if(currentQuestion<questions.length) showQuestion(currentQuestion);
         else {page2.classList.remove('active'); page3.classList.add('active');}
-    },1000); // 1 second popup
+    },1000);
 }else{
     message.textContent="Wrong answer, Mote kutte 😢";
 }
